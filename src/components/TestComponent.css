@@ -1,0 +1,23 @@
+.testComponent{
+
+    border-color: black;
+    border-width:1px;
+    border-style: solid;
+    width: 4%;
+    min-width: 65px;
+    display: flex;
+    flex-direction: column;
+
+}
+.backgroundGreen{
+    background-color: green;
+}
+.backgroundYellow{
+    background-color: yellow;
+}
+.backgroundRed{
+    background-color: red;
+}
+.backgroundBlue{
+    background-color: blue;
+}
