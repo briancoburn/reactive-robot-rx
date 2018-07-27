@@ -16,7 +16,7 @@ export default class TestComponent extends Component {
 
   onEvent(event){
     switch(event.name){
-      case 'msg':
+      case 'realtime:update':
         if(event.data.id === this.props.id){
           this.setState({updated:true,valueA:event.data.valueA,valueB:event.data.valueB,status:event.data.status, timestamp:event.data.timestamp});
           setTimeout(() => {
@@ -28,6 +28,7 @@ export default class TestComponent extends Component {
   }
 
   render(){
+    // console.log('TestComponent::render()');
     let combinedClassName = '';
     if(this.state.updated){
       if(this.state.status==='error'){

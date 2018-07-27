@@ -1,16 +1,27 @@
 import * as eventBus from './helpers/event-bus';
+let rx = require('rxjs/Rx');
+import { throttle } from 'rxjs/operators';
+import { interval } from 'rxjs/observable/interval';
+
 export default class AppModel{
   constructor(){
-    let numItems = 10000;
+
+
+    eventBus.init();
+    eventBus.addListener(this);
+    this.generateComponentsAndEvents();
+    this.setupClickHandler();
+  }
+
+  generateComponentsAndEvents(){
+
+    let numItems = 1000;
     let updateDelta = 33;
     let items = [];
     let itemCounter=0;
     let backwardsCounter = numItems-1;
     let statusOptions = ['info','warning','error'];
     let item = null;
-
-    eventBus.init();
-    eventBus.addListener(this);
     let updateObj = {};
     for(let i=0;i<numItems;i+=1){
       item = {
@@ -38,7 +49,7 @@ export default class AppModel{
           item.valueB = Math.floor(Math.random()*100);
           item.timestamp = Date.now();
           // console.log(item.id+' '+item.valueA+' '+item.valueB);
-          eventBus.triggerEvent({name:'msg', data: item});
+          eventBus.triggerEvent({name:'realtime:update', data: item});
           break;
         case 1:// cycle thru array forward
           if(itemCounter > items.length-1){
@@ -50,7 +61,7 @@ export default class AppModel{
           item.status = 'error';
           item.timestamp = Date.now();
           // console.log(item.id+' '+item.valueA+' '+item.valueB);
-          eventBus.triggerEvent({name:'msg', data: item});
+          eventBus.triggerEvent({name:'realtime:update', data: item});
           itemCounter += 1;
           break;
         case 2:// cycle thru array backwards
@@ -63,7 +74,7 @@ export default class AppModel{
           item.status = 'info';
           item.timestamp = Date.now();
           // console.log(item.id+' '+item.valueA+' '+item.valueB);
-          eventBus.triggerEvent({name:'msg', data: item});
+          eventBus.triggerEvent({name:'realtime:update', data: item});
           backwardsCounter -= 1;
           break;
       }
@@ -73,6 +84,21 @@ export default class AppModel{
       }
     },updateDelta);
   }
+
+  setupClickHandler(){
+    document.addEventListener('click', ()=>{
+      console.log('document was clicked');
+    })
+    const clicks$ = rx.Observable.fromEvent(document,'click');
+    const example = clicks$.pipe(throttle(val => interval(2000)));
+    const subscribe = example.subscribe((val) => {
+      console.log('rx let a mouse click through, val:',val);
+      // send something on the eventBus if you want to
+      // eventBus.triggerEvent('document:click', val);
+    });
+
+  }
+
   onEvent(data){
     // console.log('AppModel::onEvent()==>data:', data);
   }
